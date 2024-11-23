@@ -144,6 +144,7 @@ function applyDiscount() {
 }
 
 
+
 // JavaScript
 function placeOrder() {
     // Lấy giá trị tổng tiền
@@ -182,6 +183,7 @@ function placeOrder() {
             window.location.href = 'dang-nhap.php';
         }
     
+
 }
 
 function clearCart() {
@@ -265,6 +267,7 @@ function clearCart() {
     <li><a href="don-hang.php">Đơn hàng</a></li>
     <li><a href="tai-khoan.php">Thông tin tài khoản</a></li>
     <li><a href="logout.php" id="logout">Đăng xuất</a></li>
+
 </ul>
 </li>
 <style>
