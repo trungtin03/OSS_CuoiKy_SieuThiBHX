@@ -125,23 +125,37 @@ function updateQuantity(productId, action) {
 
 
 
-function applyDiscount() {
-    var discountCode = document.getElementById('discount-1-code').value;
+function applyDiscount() { 
+    var discountCode = document.getElementById('discount-1-code').value.trim();
 
     // Gửi mã giảm giá lên server bằng AJAX
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            var totalAmount = this.responseText;
-            // Xử lý kết quả trả về từ server (discountedAmount)
-            // Ví dụ: Cập nhật giá sau khi áp dụng giảm giá lên giao diện
-            document.getElementById('cart-amount').innerText = totalAmount;
-            document.getElementById('total-amount').innerText = totalAmount + ' đ';
+            try {
+                var response = JSON.parse(this.responseText);
+                if (response.status === 'success') {
+                    var totalAmount = response.totalAmount;
+                    // Cập nhật giá sau khi áp dụng giảm giá lên giao diện
+                    document.getElementById('cart-amount').innerText = totalAmount;
+                    document.getElementById('total-amount').innerText = totalAmount + ' đ';
+                } else if (response.status === 'error') {
+                    // Hiển thị thông báo lỗi
+                    alert(response.message);
+                    // Không cập nhật tổng tiền, hoặc cập nhật tổng tiền gốc
+                    var totalAmount = response.totalAmount;
+                    document.getElementById('cart-amount').innerText = totalAmount;
+                    document.getElementById('total-amount').innerText = totalAmount + ' đ';
+                }
+            } catch (e) {
+                alert('Đã xảy ra lỗi khi xử lý phản hồi từ server.');
+            }
         }
     };
-    xhttp.open("GET", "lay-tong-gio-hang.php?ma_giam_gia=" + discountCode, true);
+    xhttp.open("GET", "lay-tong-gio-hang.php?ma_giam_gia=" + encodeURIComponent(discountCode), true);
     xhttp.send();
 }
+
 
 
 // JavaScript
@@ -182,6 +196,7 @@ function placeOrder() {
             window.location.href = 'dang-nhap.php';
         }
     
+
 }
 
 function clearCart() {
@@ -265,6 +280,7 @@ function clearCart() {
     <li><a href="don-hang.php">Đơn hàng</a></li>
     <li><a href="tai-khoan.php">Thông tin tài khoản</a></li>
     <li><a href="logout.php" id="logout">Đăng xuất</a></li>
+
 </ul>
 </li>
 <style>
