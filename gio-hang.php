@@ -30,6 +30,7 @@
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
     <script>
+    var isLoggedIn = <?php echo isset($_SESSION['hoTen']) ? 'true' : 'false'; ?>;
     function addToCart(productId) {
         // Send Ajax request to add product to cart
         const xhr = new XMLHttpRequest();
@@ -76,7 +77,7 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 location.reload();
-                window.location.href = "trang-chu.php"; // Redirect to the homepage after successful logout
+                window.location.href = "index.php"; // Redirect to the homepage after successful logout
             }
         };
         
@@ -142,23 +143,26 @@ function applyDiscount() {
     xhttp.send();
 }
 
+
+
 // JavaScript
 function placeOrder() {
     // Lấy giá trị tổng tiền
-    var totalAmount = document.getElementById("total-amount").textContent;
-    var discountCode = document.getElementById('discount-1-code').value;
+    if (isLoggedIn) {
+        var totalAmount = document.getElementById("total-amount").textContent;
+        var discountCode = document.getElementById('discount-1-code').value;
 
-    // Tạo XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
+        // Tạo XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
 
-    // Xác định phương thức và URL của request
-    xhr.open("POST", "luu-hoa-don.php", true);
+        // Xác định phương thức và URL của request
+        xhr.open("POST", "luu-hoa-don.php", true);
 
-    // Thiết lập header cho request
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        // Thiết lập header cho request
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // Xử lý response từ server
-    xhr.onreadystatechange = function() {
+        // Xử lý response từ server
+        xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 // Xử lý response thành công
@@ -173,6 +177,13 @@ function placeOrder() {
     // Gửi request đến server với dữ liệu cần lưu
     xhr.send("totalAmount=" + totalAmount);
     xhr.send("discountCode=" + discountCode);
+        } else {
+            // Nếu chưa đăng nhập, thông báo và chuyển hướng đến trang đăng nhập
+            alert('Vui lòng đăng nhập để đặt hàng.');
+            window.location.href = 'dang-nhap.php';
+        }
+    
+
 }
 
 function clearCart() {
@@ -255,7 +266,8 @@ function clearCart() {
     <ul class="dropdown-list-1">
     <li><a href="don-hang.php">Đơn hàng</a></li>
     <li><a href="tai-khoan.php">Thông tin tài khoản</a></li>
-    <li><a href="#" id="logout">Đăng xuất</a></li>
+    <li><a href="logout.php" id="logout">Đăng xuất</a></li>
+
 </ul>
 </li>
 <style>
