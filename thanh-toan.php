@@ -1,62 +1,4 @@
-<?php
-session_start();
-include("config.php");
-
-// Xử lý cập nhật thông tin tài khoản nếu có yêu cầu từ người dùng
-if (isset($_SESSION['tenTaiKhoan'])) {
-    // Lấy tên tài khoản từ session
-    $tenTaiKhoan = $_SESSION['tenTaiKhoan'];
-    
-    // Truy vấn thông tin tài khoản từ cơ sở dữ liệu
-    $sql = "SELECT * FROM taikhoan WHERE ten_tai_khoan = '$tenTaiKhoan'";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $tenTaiKhoan = $row["ten_tai_khoan"];
-        $hoTen = $row['ho_ten'];
-        $email = $row['email'];
-        $sdt = $row['sdt'];
-        $diaChi = $row['dia_chi'];
-        $matKhau = $row['mat_khau'];
-        $ngaySinh = $row['ngay_sinh'];
-        $gioiTinh = $row['gioi_tinh'];
-    } else {
-        // Nếu không tìm thấy thông tin tài khoản, xử lý theo ý của bạn
-        mysqli_close($conn);
-        exit("Không tìm thấy thông tin tài khoản.");
-    }
-
-    // Xử lý cập nhật thông tin tài khoản nếu có yêu cầu từ người dùng
-    if (isset($_POST['submit'])) {
-        // Lấy thông tin từ form chỉnh sửa và bảo mật dữ liệu
-        $hoTenMoi = mysqli_real_escape_string($conn, $_POST['hoTen']);
-        $emailMoi = mysqli_real_escape_string($conn, $_POST['email']);
-        $sdtMoi = mysqli_real_escape_string($conn, $_POST['sdt']);
-        $diaChiMoi = mysqli_real_escape_string($conn, $_POST['diaChi']);
-        $ngaySinhMoi = mysqli_real_escape_string($conn, $_POST['ngaySinh']);
-        $gioiTinhMoi = mysqli_real_escape_string($conn, $_POST['gioiTinh']);
-
-        // Cập nhật thông tin tài khoản trong cơ sở dữ liệu
-        $updateSql = "UPDATE taikhoan SET ho_ten = '$hoTenMoi', email = '$emailMoi', sdt = '$sdtMoi', dia_chi = '$diaChiMoi', ngay_sinh = '$ngaySinhMoi', gioi_tinh = '$gioiTinhMoi' WHERE ten_tai_khoan = '$tenTaiKhoan'";
-        $updateResult = mysqli_query($conn, $updateSql);
-
-        if ($updateResult) {
-            // Cập nhật thành công, cập nhật lại thông tin trong session
-            $_SESSION['hoTen'] = $hoTenMoi;
-            // Redirect đến trang tài khoản
-            header("Location: tai-khoan.php");
-            exit();
-        } else {
-            // Xử lý lỗi khi cập nhật thông tin tài khoản không thành công
-            mysqli_close($conn);
-            exit("Cập nhật thông tin không thành công.");
-        }
-    }
-}
-
-// Đóng kết nối nếu không cần thiết
-mysqli_close($conn);
-?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <!--[if IE 9 ]> <html lang="vi-VN" class="ie9 loading-site no-js"> <![endif]-->
 <!--[if IE 8 ]> <html lang="vi-VN" class="ie8 loading-site no-js"> <![endif]-->
@@ -66,7 +8,7 @@ mysqli_close($conn);
 <head>
 <meta charset="UTF-8" />
 
-<title>Tài khoản của bạn</title>
+<title>Đăng ký tài khoản</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <link rel='dns-prefetch' href='//maxcdn.bootstrapcdn.com' />
 <link rel="stylesheet" id="flatsome-ionfas fas-css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" media="all" />
@@ -86,41 +28,14 @@ mysqli_close($conn);
 <!-- Thư viện Slick Carousel -->
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <!-- Thư viện jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script>
-    function addToCart(productId) {
-        // Send Ajax request to add product to cart
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'them-vao-gio-hang.php?ma_san_pham=' + productId, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                const response = xhr.responseText;
-                if (response === 'success') {
-                    // Update cart quantity
-                    updateCartQuantity();
-                    alert("Product added to cart successfully!");
-                    location.reload();
-                } else {
-                    alert("Failed to add product to cart.");
-                }
-            }
-        };
-        xhr.send();
-    }
+    <!-- Thư viện Slick Carousel -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-    function updateCartQuantity() {
-        // Send Ajax request to get updated cart quantity
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'lay-tong-gio-hang.php', true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                const cartQuantity = xhr.responseText;
-                document.getElementById('cart-quantity').textContent = cartQuantity;
-            }
-        };
-        xhr.send();
-    }
-</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     var userNameElement = document.getElementById("user-name");
@@ -153,111 +68,54 @@ mysqli_close($conn);
 
 </script>
 <script>
-// Đặt function này vào phần đầu của file hoặc trong một file JS riêng
-function updateQuantity(productId, change) {
-    // Make an AJAX request to the cap-nhap-so-luong.php file
-    // Pass the productId and change values as parameters
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lấy nút "Hoàn tất mua"
+        var submitButton = document.getElementById('submit-button');
 
-    // Assuming you're using XMLHttpRequest
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var response = JSON.parse(xhr.responseText);
+        // Gắn sự kiện click cho nút
+        submitButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Ngăn chặn hành vi mặc định của nút submit
 
-            if (response.status === 'success') {
-                // Update the quantity input field
-                var quantityInput = document.getElementById('quantity-' + productId);
-                quantityInput.value = response.newQuantity;
+            // Lấy các phần tử và giá trị từ trang thanh-toan.php
+            var phone = document.getElementById('phone').value;
+            var email = document.getElementById('email').value;
+            var address = document.getElementById('address').value;
+            var fullName = document.getElementById('full-name').value;
+            var pickupTime = document.getElementById('pickup-time').value;
+            var paymentMethod = document.getElementById('payment-method').value;
+            var deliveryFee = document.getElementById('delivery-fee').value;
+            var totalAmount = document.getElementById('total-amount').innerHTML;
 
-                // Update the total amount
-                var totalAmountSpan = document.getElementById('total-amount');
-                totalAmountSpan.innerText = response.totalAmount;
-            } else {
-                // Handle error
-                console.error('Error updating quantity');
-            }
-        }
-    };
+            // Tạo một chuỗi truy vấn URL để gửi các thông tin
+            var queryString = 'phone=' + encodeURIComponent(phone) +
+                '&email=' + encodeURIComponent(email) +
+                '&address=' + encodeURIComponent(address) +
+                '&full-name=' + encodeURIComponent(fullName) +
+                '&pickup-time=' + encodeURIComponent(pickupTime) +
+                '&payment-method=' + encodeURIComponent(paymentMethod) +
+                '&delivery-fee=' + encodeURIComponent(deliveryFee) +
+                '&total-amount=' + encodeURIComponent(totalAmount);
 
-    xhr.open('GET', 'cap-nhap-so-luong.php?ma_san_pham=' + productId + '&tang_giam=' + (change === 1 ? 'tang' : 'giam') + '&so_luong=' + Math.abs(change), true);
-    xhr.send();
-}
+            // Gửi yêu cầu AJAX để lấy mã hóa đơn gần nhất
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'update-hoa-don.php?' + queryString, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Xử lý response thành công
+                        var maHoaDon = xhr.responseText;
 
-
-
-    function updateTotalAmount() {
-        // Make AJAX request to get the updated total amount
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var totalAmount = xhr.responseText;
-                document.getElementById('total-amount').innerText = totalAmount;
-            }
-        };
-
-        xhr.open('GET', 'lay-tong-gio-hang.php', true);
-        xhr.send();
-    }
-
-function applyDiscount() {
-    // Get discount code from input field
-    const discountCode = document.getElementById('discount-1-code').value;
-
-    // Send Ajax request to apply discount code
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'ap-dung-uu-dai.php?ma_giam_gia=' + discountCode, true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            const response = xhr.responseText;
-            if (response === 'success') {
-                // Update cart total with applied discount
-                updateCartTotal();
-                alert("Discount applied successfully!");
-            } else {
-                alert("Failed to apply discount code.");
-            }
-        }
-    };
-    xhr.send();
-}
-
-function placeOrder() {
-    // Send Ajax request to place order
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'dat-hang.php', true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            const response = xhr.responseText;
-            if (response === 'success') {
-                alert("Order placed successfully!");
-                // Redirect to order history page or thank you page
-                window.location.href = 'lich-su-dat-hang.php';
-            } else {
-                alert("Failed to place order.");
-            }
-        }
-    };
-    xhr.send();
-}
-
-function clearCart() {
-    // Send Ajax request to clear cart
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'xoa-gio-hang.php', true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            const response = xhr.responseText;
-            if (response === 'success') {
-                alert("Cart cleared successfully!");
-                // Reload the page to update the cart view
-                window.location.reload();
-            } else {
-                alert("Failed to clear cart.");
-            }
-        }
-    };
-    xhr.send();
-}
+                        // Chuyển hướng đến trang hoan-tat-thanh-toan.php với thông tin đã gửi
+                        window.location.href = 'hoan-tat-thanh-toan.php?' + queryString;
+                    } else {
+                        // Xử lý response không thành công
+                        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+                    }
+                }
+            };
+            xhr.send();
+        });
+    });
 </script>
 </head>
 
@@ -295,7 +153,7 @@ function clearCart() {
 									<div class="header-search-form-wrapper">
 										<div class="searchform-wrapper ux-search-box relative form-flat is-normal">
 											<div class="searchform-wrapper ux-search-box relative form-flat is-normal">
-												<form role="search" method="get" class="searchform " action="tim-kiem.php">
+                                            <form role="search" method="get" class="searchform " action="tim-kiem.php">
 													<div class="flex-row relative">
 														<div class="flex-col flex-grow">
 															<label class="screen-reader-text" for="woocommerce-product-search-field-0">Tìm kiếm:</label>
@@ -429,7 +287,7 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
         ?>
             &nbsp;<span class="woocommerce-Price-currencySymbol">&#8363;</span></span></span>
         </span>
-        <i class="fas fa-shopping-basket" data-fas fa-label="0"></i>
+        <i class="fas fa-shopping-bag" data-fas fa-label="0"></i>
         <?php
         include "config.php";
         $query = "SELECT SUM(so_luong) AS totalQuantity FROM giohang";
@@ -565,61 +423,173 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
 
 
 	<main id="main" class="">
+
+
 		<div class="page-wrapper page-left-sidebar">
 			<div class="row" id="row">
-      <div class="container-form"><h1>Thông tin tài khoản</h1>
-    <form class ="form-1" method="POST" action="">
-        <label for="hoTen">Họ tên:</label>
-        <input type="text" id="hoTen" name="hoTen" value="<?php echo $hoTen; ?>"><br>
+
+<div class="body">
+    <div id="customer-info">
+        <h3>Thông tin khách hàng</h3>
+        <?php
+// Kết nối tới cơ sở dữ liệu
+include "config.php";
+if (isset($_SESSION['tenTaiKhoan'])) {
+// Lấy thông tin tài khoản từ session
+$tenTaiKhoan = $_SESSION['tenTaiKhoan'];
+
+// Truy vấn để lấy thông tin khách hàng từ bảng taikhoan dựa trên tên tài khoản
+$query_customer = "SELECT * FROM taikhoan WHERE ten_tai_khoan = '$tenTaiKhoan'";
+$result_customer = mysqli_query($conn, $query_customer);
+
+if ($row_customer = mysqli_fetch_assoc($result_customer)) {
+    $phone = $row_customer['sdt'];
+    $email = $row_customer['email'];
+    $fullName = $row_customer['ho_ten'];
+    $gender = $row_customer['gioi_tinh'];
+    $address = $row_customer['dia_chi'];
+
+    echo '
+    <form id="customer-form" action="thanh-toan.php" method="post">
+        <label for="phone">Số điện thoại:</label>
+        <input type="text" id="phone" name="phone" readonly style="background-color: #f6f6f6;"  value="' . $phone . '"><br>
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?php echo $email; ?>"><br>
+        <input type="email" id="email" name="email" readonly style="background-color: #f6f6f6;" value="' . $email . '"><br>
 
-        <label for="sdt">Số điện thoại:</label>
-        <input type="tel" id="sdt" name="sdt" value="<?php echo $sdt; ?>"><br>
+        <label for="full-name">Họ tên:</label>
+        <input type="text" id="full-name" name="full-name" readonly style="background-color: #f6f6f6;" value="' . $fullName . '"><br>
 
-        <label for="diaChi">Địa chỉ:</label>
-        <input type="text" id="diaChi" name="diaChi" value="<?php echo $diaChi; ?>"><br>
+        <label>Giới tính:</label>
+        <input type="radio" id="male" name="gender" value="male" ' . ($gender == "male" ? "checked" : "") . '>
+        <label for="male">Nam</label>
+        <input type="radio" id="female" name="gender" value="female" ' . ($gender == "female" ? "checked" : "") . '>
+        <label for="female">Nữ</label><br>
 
-        <label for="tenTaiKhoan">Tên tài khoản:</label>
-        <input type="text" id="tenTaiKhoan" name="tenTaiKhoan" readonly style="background-color: #f6f6f6;" value="<?php echo $tenTaiKhoan; ?>"><br>
-        <label for="ngaySinh">Ngày sinh:</label>
-        <input type="date" id="ngaySinh" name="ngaySinh" value="<?php echo $ngaySinh; ?>"><br>
+        <label for="address">Địa chỉ:</label>
+        <textarea id="address" name="address">' . $address . '</textarea><br>
+    </form>
+    ';
+}
+}
 
-        <label for="gioiTinh">Giới tính:</label>
-        <select id="gioiTinh" name="gioiTinh">
-            <option value="Nam" <?php if ($gioiTinh == 'Nam') echo 'selected'; ?>>Nam</option>
-            <option value="Nữ" <?php if ($gioiTinh == 'Nữ') echo 'selected'; ?>>Nữ</option>
+// Đóng kết nối với cơ sở dữ liệu
+mysqli_close($conn);
+?>
+    </div>
+
+    <div id="transaction-info">
+        <h3>Thông tin giao dịch</h3>
+        <div id="delivery-options">
+            <label for="floor-delivery">Yêu cầu mang lên lầu (Áp dụng cho chung cư / căn hộ):</label>
+            <input type="checkbox" id="floor-delivery" name="floor-delivery"><br>
+
+            <label for="other-person-delivery">Gọi người khác nhận hàng (nếu có):</label>
+            <input type="checkbox" id="other-person-delivery" name="other-person-delivery"><br>
+        </div>
+
+        <label for="pickup-time">Thời gian nhận hàng:</label>
+        <input type="datetime-local" id="pickup-time" name="pickup-time"><br>
+
+        <label for="payment-method">Hình thức thanh toán:</label>
+        <select id="payment-method" name="payment-method">
+            <option value="Thanh toán trực tiếp">Thanh toán trực tiếp</option>
+            <option value="Thanh toán chuyển khoản">Thanh toán chuyển khoản</option>
         </select><br>
 
-        <input type="submit" name="submit" value="Lưu">
-    </form></div>
-    <style>
-        .container-form {
+        <label for="discount-code">Phiếu mua hàng:</label>
+        <input type="text" id="discount-code" name="discount-code" placeholder="Nhập mã phiếu" readonly style="background-color: #f6f6f6;" value="<?php
+            // Kết nối tới cơ sở dữ liệu
+            include "config.php";
+
+            // Lấy giá trị tổng tiền từ tham số trong URL
+        $discountCode = $_GET['discountCode'];
+
+        echo $discountCode;
+            ?>">
+        
+        <br>
+    </div>
+
+    <div id="invoice-info">
+        <h3>Thông tin hóa đơn</h3>
+        <label for="total-amount">Tiền hàng:</label>
+        <span id="total-amount">
+            <?php
+            // Kết nối tới cơ sở dữ liệu
+            include "config.php";
+
+            // Lấy giá trị tổng tiền từ tham số trong URL
+        $totalAmount = $_GET['totalAmount'];
+
+        echo $totalAmount;
+            ?>
+        </span><br>
+
+        <label for="delivery-fee">Phí giao hàng:</label>
+        <select id="delivery-fee" name="delivery-fee">
+            <option value="15000">Giao trong 8h - 17h - 15.000 đ</option>
+            <option value="20000">Giao trong 17h - 21h - 20.000 đ</option>
+        </select><br>
+
+        <label for="total-payment">Tổng thanh toán:</label>
+        <span id="total-payment">
+            <?php
+            // Kết nối tới cơ sở dữ liệu
+            include "config.php";
+
+            // Lấy giá trị tổng tiền từ tham số trong URL
+        $totalAmount = $_GET['totalAmount'];
+
+        echo $totalAmount;
+            ?>
+        </span><br>
+    </div>
+
+    <button id="submit-button" type="submit" form="customer-form">Hoàn tất mua <span id="total-payment">
+            <?php
+            // Kết nối tới cơ sở dữ liệu
+            include "config.php";
+
+            // Lấy giá trị tổng tiền từ tham số trong URL
+        $totalAmount = $_GET['totalAmount'];
+
+        echo $totalAmount;
+            ?>
+        </span> </button>
+</div>
+            
+</div>
+</div>
+<style>
+        .body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f7f7f7;
             margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .form-1 {
-            width: 50%;
-            margin: 20px auto;
-            background: #fff;
             padding: 20px;
+            
+        }
+
+        h3 {
+            margin-top: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        #customer-info,
+        #transaction-info,
+        #invoice-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-top: 10px;
         }
 
         input[type="text"],
@@ -627,6 +597,7 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
         input[type="tel"],
         input[type="password"],
         input[type="date"],
+        textarea,
         select {
             width: calc(100% - 10px);
             margin-bottom: 10px;
@@ -635,22 +606,27 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
             border-radius: 5px;
         }
 
-        input[type="submit"] {
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        #submit-button {
+            display: block;
             width: 100%;
             padding: 10px;
-            margin-top: 10px;
+            margin-top: 20px;
             border: none;
             border-radius: 5px;
-            background-color: #333;
+            background-color: green;
             color: #fff;
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #555;
+        #submit-button:hover {
+            background-color: #0056b3;
         }
     </style>
-    
 
 
 
@@ -792,7 +768,7 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
                                         </div>
                                     </div>
                                 </div>  
-                                <div style="display: flex ;flex-direction: column ;background-color: #fff ;padding: 12px">
+								<div style="display: flex ;flex-direction: column ;background-color: #fff ;padding: 12px">
                                         <div class="display: flex">
                                             <div style="max-width: 60%"><a href="https://www.bachhoaxanh.com/huong-dan-mua-hang" style="float: left ;width: 33.33% ;overflow: hidden ;padding-right: 4px ;text-align: left ;font-size: 14px ;line-height: 30px ;color: #222b45" target="_blank" rel="nofollow noreferrer">Hướng dẫn mua hàng</a>
                                                 <a href="https://hddt.bachhoaxanh.com" style="float: left ;width: 33.33% ;overflow: hidden ;padding-right: 4px ;text-align: left ;font-size: 14px ;line-height: 30px ;color: #222b45" target="_blank" rel="nofollow noreferrer">Hóa đơn điện tử</a>
@@ -934,7 +910,7 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
 												$loai_san_pham = $row['loai_san_pham'];
 
 												echo "<li class='cat-item cat-parent'>";
-												echo "<a href='#' class='category-name'>$ten_mat_hang <i class='fas fa-angle-down'></i></a>";
+												echo "<a href='#' class='category-name'>$ten_mat_hang </a><i class='fas fa-angle-down'></i>";
 												echo "<ul class='children'>";
 
 												$sub_categories_arr = explode('; ', $loai_san_pham);
@@ -1058,6 +1034,7 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
 
 
 	</main><!-- #main -->
+
 
 
 
