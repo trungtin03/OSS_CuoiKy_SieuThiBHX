@@ -1,61 +1,59 @@
 <?php
 session_start();
-
-// Kết nối tới cơ sở dữ liệu
 include "config.php";
 
-// Lấy mã giảm giá từ tham số truyền vào (nếu có)
-$discountCode = isset($_GET['ma_giam_gia']) ? $_GET['ma_giam_gia'] : '';
+// Đặt header để trả về JSON
+header('Content-Type: application/json');
 
-// Kiểm tra xem có mã giảm giá được truyền vào hay không
+// Lấy mã giảm giá từ tham số truyền vào (nếu có)
+$discountCode = isset($_GET['ma_giam_gia']) ? trim($_GET['ma_giam_gia']) : '';
+
+// Khởi tạo mảng phản hồi
+$response = array();
+
+// Lấy tổng thành tiền của tất cả sản phẩm trong giỏ hàng
+$query_total = "SELECT SUM(thanh_tien) as totalAmount FROM giohang";
+$result_total = mysqli_query($conn, $query_total);
+$totalAmount = 0;
+if ($row_total = mysqli_fetch_assoc($result_total)) {
+    $totalAmount = $row_total['totalAmount'];
+}
+
 if (!empty($discountCode)) {
+    // Chuyển mã giảm giá sang chữ in hoa
+    $discountCodeUpper = strtoupper($discountCode);
+
     // Truy vấn để lấy thông tin về giảm giá từ bảng giamgia
-    $query_discount = "SELECT * FROM giamgia WHERE ten_ma_giam_gia = '$discountCode'";
+    $query_discount = "SELECT * FROM giamgia WHERE UPPER(ten_ma_giam_gia) = '$discountCodeUpper'";
     $result_discount = mysqli_query($conn, $query_discount);
 
     if ($row_discount = mysqli_fetch_assoc($result_discount)) {
         $discountPercentage = $row_discount['menh_gia_giam_gia'];
 
-        // Tính toán giá sau khi áp dụng giảm giá
-        $query_total = "SELECT SUM(thanh_tien) as totalAmount FROM giohang";
-        $result_total = mysqli_query($conn, $query_total);
+        // Áp dụng giảm giá
+        $totalAfterDiscount = $totalAmount * (1 - $discountPercentage / 100);
 
-        if ($row_total = mysqli_fetch_assoc($result_total)) {
-            $totalAmount = $row_total['totalAmount'];
+        // Định dạng số tiền
+        $formattedTotal = number_format($totalAfterDiscount, 0, '', ',');
 
-            // Áp dụng giảm giá
-            $totalAmount = $totalAmount * (1 - $discountPercentage / 100);
-
-            echo  $totalAmount;
+        $response['status'] = 'success';
+        $response['totalAmount'] = $formattedTotal;
     } else {
-        echo 0;
-    }
-    } else {
-        echo 0;
+        // Mã giảm giá không hợp lệ
+        $formattedTotal = number_format($totalAmount, 0, '', ',');
+        $response['status'] = 'error';
+        $response['message'] = 'Mã giảm giá không hợp lệ.';
+        $response['totalAmount'] = $formattedTotal;
     }
 } else {
-    // Lấy tổng số lượng sản phẩm trong giỏ hàng
-    $query = "SELECT SUM(so_luong) as totalQuantity FROM giohang";
-    $result = mysqli_query($conn, $query);
-
-    if ($row = mysqli_fetch_assoc($result)) {
-        $totalQuantity = $row['totalQuantity'];
-        echo $totalQuantity;
-    } else {
-        echo 0;
-    }
-
-    // Tính tổng thành tiền của tất cả sản phẩm trong giỏ hàng
-    $query_total = "SELECT SUM(thanh_tien) as totalAmount FROM giohang";
-    $result_total = mysqli_query($conn, $query_total);
-
-    if ($row_total = mysqli_fetch_assoc($result_total)) {
-        $totalAmount = $row_total['totalAmount'];
-        echo $totalAmount;
-    } else {
-        echo 0;
-    }
+    // Không có mã giảm giá, trả về tổng tiền bình thường
+    $formattedTotal = number_format($totalAmount, 0, '', ',');
+    $response['status'] = 'success';
+    $response['totalAmount'] = $formattedTotal;
 }
+
+// Trả về phản hồi dạng JSON
+echo json_encode($response);
 
 // Đóng kết nối với cơ sở dữ liệu
 mysqli_close($conn);
