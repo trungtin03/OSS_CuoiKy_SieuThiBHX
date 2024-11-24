@@ -2,7 +2,8 @@
 
 ## 1. Tổng Quan Dự Án
 - **Tên dự án**: Cửa Hàng Bách Hóa Xanh
-- **Mô tả**: Hệ thống quản lý bán hàng trực tuyến và tại cửa hàng với các chức năng hỗ trợ người dùng mua sắm, quản lý hàng hóa, và phân quyền quản trị. 
+- **Mô tả**: Hệ thống quản lý bán hàng trực tuyến và tại cửa hàng với các chức năng hỗ trợ người dùng mua sắm, quản lý hàng hóa, và phân quyền quản trị.
+- **Tài liệu tham khảo**: [https://www.bachhoaxanh.com/]
 
 
 ---
