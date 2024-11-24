@@ -2,6 +2,7 @@
 
 ## 1. Tổng Quan Dự Án
 - **Tên dự án**: Cửa Hàng Bách Hóa Xanh
+- **Giáo viên hướng dẫn**: Nguyễn Hải Triều
 - **Mô tả**: Hệ thống quản lý bán hàng trực tuyến và tại cửa hàng với các chức năng hỗ trợ người dùng mua sắm, quản lý hàng hóa, và phân quyền quản trị.
 - **Tài liệu tham khảo**: [https://www.bachhoaxanh.com/]
 
@@ -24,10 +25,14 @@
 
 ### 3.2 Đăng Nhập
 - Người dùng nhập tên đăng nhập và mật khẩu để truy cập hệ thống.
-- Phân quyền:
-  - Người dùng thông thường: truy cập giao diện mua sắm.
-  - Admin: truy cập giao diện quản trị.
+- Người dùng thông thường: truy cập giao diện mua sắm.
     ![Giao diện đăng Nhập](images/index2.png)
+### 3.2 Giỏ Hàng
+- Người dùng truy cập trang giỏ hàng sau khi lựa chọn xong các sản phẩm thích hợp từ trang web.
+![](images/index5.png)
+- Sau đó người dùng điền thông tin khách hàng để hoàn tất quá trình mua hàng
+![](images/index6.png)
+![](images/index7.png)
 
 ---
 
@@ -43,6 +48,13 @@ Dưới đây là hình ảnh minh họa giao diện dành cho người dùng:
 Dưới đây là hình ảnh minh họa giao diện dành cho quản trị viên:
 
 ![Giao diện admin](images/admin1.png)
-![](images/admin2.png)
+![](images/admin3.png)
+### 5.1 Category
+![](images/admin4.png)
+![](images/admin5.png)
+![](images/admin6.png)
+![](images/admin7.png)
+
+
 
 ---
