@@ -1100,45 +1100,42 @@
                     <div class="div-trong">
                         <div id="secondary" class="widget-area" role="complementary">
                             <aside id="woocommerce_product_categories-2" class="widget woocommerce widget_product_categories">
-                                <span class="widget-title" onclick="toggleProductList()">Danh mục sản phẩm</span>
-                                <div class="is-divider small"></div>
+                            <span class="widget-title" onclick="toggleProductList()">Danh mục sản phẩm</span>
+									<div class="is-divider small"></div>
 
-                                <ul class="product-categories" id="productList" style="display: none;">
-                                    <?php
-                                    include("config.php");
-                                    // SQL query to fetch the list of categories and their respective sub-categories
-                                    $sql = "SELECT mh.ma_mat_hang, mh.ten_mat_hang, GROUP_CONCAT(lsp.ten_loai_san_pham SEPARATOR '; ') AS loai_san_pham
+									<ul class="product-categories" id="productList" style="display: none;">
+										<?php
+										include("config.php");
+										// SQL query to fetch the list of categories and their respective sub-categories
+										$sql = "SELECT mh.ma_mat_hang, mh.ten_mat_hang, GROUP_CONCAT(lsp.ten_loai_san_pham SEPARATOR '; ') AS loai_san_pham
           FROM mathang mh
           INNER JOIN loaisanpham lsp ON mh.ma_mat_hang = lsp.ma_mat_hang
           GROUP BY mh.ma_mat_hang";
 
-                                    $result = mysqli_query($conn, $sql);
+										$result = mysqli_query($conn, $sql);
 
-                                    if (mysqli_num_rows($result) > 0) {
-                                        while ($row = mysqli_fetch_assoc($result)) {
-                                            $ten_mat_hang = $row['ten_mat_hang'];
-                                            $loai_san_pham = $row['loai_san_pham'];
+										if (mysqli_num_rows($result) > 0) {
+											while ($row = mysqli_fetch_assoc($result)) {
+                                                $ma_mat_hang = $row['ma_mat_hang'];
+												$ten_mat_hang = $row['ten_mat_hang'];
+												$loai_san_pham = $row['loai_san_pham'];
 
-                                            echo "<li class='cat-item cat-parent'>";
-                                            echo "<a href='#' class='category-name'>$ten_mat_hang </a><i class='fas fa-angle-down'></i>";
-                                            echo "<ul class='children'>";
+												echo "<li class='cat-item cat-parent'>";
+												echo "<a href='xem-sp.php?ma_mat_hang=$ma_mat_hang' class='category-name'>$ten_mat_hang </a>";
+												echo "<ul class='children'>";
 
-                                            $sub_categories_arr = explode('; ', $loai_san_pham);
+												$sub_categories_arr = explode('; ', $loai_san_pham);
 
-                                            foreach ($sub_categories_arr as $sub_category) {
-                                                echo "<li class='cat-item'><a href='#'>$sub_category</a></li>";
-                                            }
+												echo "</ul>";
+												echo "</li>";
+											}
+										} else {
+											echo "<li>No categories found.</li>";
+										}
 
-                                            echo "</ul>";
-                                            echo "</li>";
-                                        }
-                                    } else {
-                                        echo "<li>No categories found.</li>";
-                                    }
-
-                                    // Close the database connection
-                                    mysqli_close($conn);
-                                    ?>
+										// Close the database connection
+										mysqli_close($conn);
+										?>
                                 </ul>
                             </aside>
                         </div><!-- #secondary -->

@@ -930,18 +930,15 @@ if ($row_total = mysqli_fetch_assoc($result_total)) {
 
 										if (mysqli_num_rows($result) > 0) {
 											while ($row = mysqli_fetch_assoc($result)) {
+                                                $ma_mat_hang = $row['ma_mat_hang'];
 												$ten_mat_hang = $row['ten_mat_hang'];
 												$loai_san_pham = $row['loai_san_pham'];
 
 												echo "<li class='cat-item cat-parent'>";
-												echo "<a href='#' class='category-name'>$ten_mat_hang <i class='fas fa-angle-down'></i></a>";
+												echo "<a href='xem-sp.php?ma_mat_hang=$ma_mat_hang' class='category-name'>$ten_mat_hang </a>";
 												echo "<ul class='children'>";
 
 												$sub_categories_arr = explode('; ', $loai_san_pham);
-
-												foreach ($sub_categories_arr as $sub_category) {
-													echo "<li class='cat-item'><a href='#'>$sub_category</a></li>";
-												}
 
 												echo "</ul>";
 												echo "</li>";

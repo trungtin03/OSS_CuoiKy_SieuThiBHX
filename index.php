@@ -2470,14 +2470,10 @@
                                         $ten_mat_hang = $row['ten_mat_hang'];
                                         $loai_san_pham = $row['loai_san_pham'];
                                         echo "<li class='cat-item cat-parent'>";
-                                        echo "<a href='xem-sp.php?ma_mat_hang=$ma_mat_hang' class='category-name'>$ten_mat_hang </a><i class='fas fa-angle-down' ></i>";
+                                        echo "<a href='xem-sp.php?ma_mat_hang=$ma_mat_hang' class='category-name'>$ten_mat_hang </a>";
                                         echo "<ul class='children'>";
 
                                         $sub_categories_arr = explode('; ', $loai_san_pham);
-
-                                        foreach ($sub_categories_arr as $sub_category) {
-                                            echo "<li class='cat-item'><a href='#'>$sub_category</a></li>";
-                                        }
 
                                         echo "</ul>";
                                         echo "</li>";
