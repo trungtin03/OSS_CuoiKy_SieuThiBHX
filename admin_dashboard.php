@@ -21,6 +21,8 @@ $total_customers = mysqli_fetch_assoc(mysqli_query($conn, $total_customers_sql))
 $total_discounts = mysqli_fetch_assoc(mysqli_query($conn, $total_discounts_sql))['total'];
 $total_orders = mysqli_fetch_assoc(mysqli_query($conn, $total_orders_sql))['total'];
 $total_categories = mysqli_fetch_assoc(mysqli_query($conn, $total_categories_sql))['total'];
+
+
 ?>
 <!DOCTYPE html>
 <html lang="vi-VN">
@@ -105,6 +107,7 @@ $total_categories = mysqli_fetch_assoc(mysqli_query($conn, $total_categories_sql
             .card .card-body i {
                 font-size: 2rem;
             }
+
         }
     </style>
 </head>
