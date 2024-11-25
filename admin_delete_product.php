@@ -1,67 +1,57 @@
 <?php
 session_start();
 
-// Kiểm tra nếu chưa đăng nhập thì chuyển hướng đến trang đăng nhập
+// Kiểm tra đăng nhập admin
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: admin_login.php");
     exit();
 }
 
-include("config.php");
-
-// Kiểm tra tham số ma_san_pham
-if (!isset($_GET['id']) || empty($_GET['id'])) {
+// Kiểm tra tham số ID
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: admin_products.php");
     exit();
 }
 
 $ma_san_pham = intval($_GET['id']);
 
-// Truy vấn thông tin sản phẩm để lấy tên file hình ảnh
-$sql_select = "SELECT anh1, anh2, anh3 FROM sanpham WHERE ma_san_pham = ?";
-$stmt_select = $conn->prepare($sql_select);
-$stmt_select->bind_param("i", $ma_san_pham);
-$stmt_select->execute();
-$result_select = $stmt_select->get_result();
+// Kết nối cơ sở dữ liệu
+include("config.php");
 
-if ($result_select->num_rows == 0) {
-    echo "Không tìm thấy sản phẩm.";
+// Truy vấn sản phẩm để lấy các ảnh
+$product_sql = "SELECT anh1, anh2, anh3 FROM sanpham WHERE ma_san_pham = ?";
+$stmt = $conn->prepare($product_sql);
+$stmt->bind_param("i", $ma_san_pham);
+$stmt->execute();
+$product_result = $stmt->get_result();
+
+if ($product_result->num_rows === 0) {
+    echo "<div class='alert alert-warning m-4'>Không tìm thấy sản phẩm này.</div>";
     exit();
 }
 
-$product = $result_select->fetch_assoc();
-$anh1 = $product['anh1'];
-$anh2 = $product['anh2'];
-$anh3 = $product['anh3'];
+$product = $product_result->fetch_assoc();
+$stmt->close();
 
-$stmt_select->close();
-
-// Xóa sản phẩm khỏi cơ sở dữ liệu
-$sql_delete = "DELETE FROM sanpham WHERE ma_san_pham = ?";
-$stmt_delete = $conn->prepare($sql_delete);
+// Xóa sản phẩm
+$delete_sql = "DELETE FROM sanpham WHERE ma_san_pham = ?";
+$stmt_delete = $conn->prepare($delete_sql);
 $stmt_delete->bind_param("i", $ma_san_pham);
 
 if ($stmt_delete->execute()) {
-    // Xóa các hình ảnh liên quan khỏi thư mục
-    $target_dir = "images/products/";
-    if (!empty($anh1) && file_exists($target_dir . $anh1)) {
-        unlink($target_dir . $anh1);
+    // Xóa các ảnh nếu tồn tại
+    $upload_dir = 'images/products/';
+    for ($i = 1; $i <=3; $i++) {
+        if (!empty($product["anh$i"]) && file_exists($upload_dir . $product["anh$i"])) {
+            unlink($upload_dir . $product["anh$i"]);
+        }
     }
-    if (!empty($anh2) && file_exists($target_dir . $anh2)) {
-        unlink($target_dir . $anh2);
-    }
-    if (!empty($anh3) && file_exists($target_dir . $anh3)) {
-        unlink($target_dir . $anh3);
-    }
-
     $stmt_delete->close();
     $conn->close();
-
-    // Chuyển hướng về danh sách sản phẩm với thông báo thành công
     header("Location: admin_products.php?msg=deleted");
     exit();
 } else {
-    echo "Lỗi khi xóa sản phẩm: " . htmlspecialchars($stmt_delete->error);
+    echo "<div class='alert alert-danger m-4'>Lỗi khi xóa sản phẩm: " . htmlspecialchars($stmt_delete->error) . "</div>";
     $stmt_delete->close();
     $conn->close();
     exit();
